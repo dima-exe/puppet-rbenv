@@ -16,7 +16,7 @@ describe 'rbenv' do
   ) end
 
   context "when $global_version is set" do
-    let(:params){ { global_version: 'my-global-version' } }
+    let(:params){ { :global_version => 'my-global-version' } }
     it do should contain_file("/usr/lib/rbenv/version").with(
       :content => 'my-global-version',
       :require => 'Rbenv::Ruby[my-global-version]'
