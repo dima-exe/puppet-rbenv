@@ -2,10 +2,18 @@
 #
 
 class rbenv (
+  $ruby           = undef,
   $global_version = undef
 ) {
-  package { ['build-essential', 'rbenv']:
-    ensure => 'installed',
+
+  include 'rbenv::params'
+
+  package { 'rbenv':
+    ensure => $rbenv::params::rbenv_version,
+  }
+
+  package { 'build-essential':
+    ensure => 'present'
   }
 
   exec { 'rbenv:rehash':
@@ -18,11 +26,23 @@ class rbenv (
     content => "gem: --no-ri --no-rdoc\n"
   }
 
-  if $global_version != undef {
-    file{ '/usr/lib/rbenv/version':
-      ensure  => 'present',
-      content => $global_version,
-      require => Rbenv::Ruby[$global_version],
+  if $ruby != undef {
+    rbenv::ruby{ $ruby: }
+
+    if $global_version == undef {
+      if is_array($ruby) {
+        class{ 'rbenv::global':
+          version => $ruby[0]
+        }
+      } else {
+        class{ 'rbenv::global':
+          version => $ruby
+        }
+      }
+    } else {
+      class{ 'rbenv::global':
+        version => $global_version
+      }
     }
   }
 }

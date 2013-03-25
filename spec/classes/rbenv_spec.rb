@@ -15,11 +15,34 @@ describe 'rbenv' do
 "
   ) end
 
-  context "when $global_version is set" do
-    let(:params){ { :global_version => 'my-global-version' } }
-    it do should contain_file("/usr/lib/rbenv/version").with(
-      :content => 'my-global-version',
-      :require => 'Rbenv::Ruby[my-global-version]'
+  context "when $ruby" do
+    context "when is string" do
+      let(:params) { { :ruby => 'my-ruby' } }
+      it { should contain_resource("Rbenv::Ruby[my-ruby]") }
+
+      it { should contain_class("rbenv::global").with(
+        :version => 'my-ruby'
+      ) }
+    end
+
+    context "when is array" do
+      let(:params) { { :ruby => %w{ ruby1 ruby2} } }
+      it { should contain_resource("Rbenv::Ruby[ruby1]") }
+      it { should contain_resource("Rbenv::Ruby[ruby2]") }
+
+      it { should contain_class("rbenv::global").with(
+        :version => 'ruby1'
+      ) }
+    end
+  end
+
+  context "when $global_version" do
+    let(:params){ {
+      :global_version => 'my-global-version',
+      :ruby           => %w{ my-global-version }
+    } }
+    it do should contain_class("rbenv::global").with(
+      :version => 'my-global-version'
     ) end
   end
 end

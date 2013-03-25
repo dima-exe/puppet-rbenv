@@ -7,23 +7,27 @@
 #
 
 define rbenv::ruby (
-  $version = $title,
+  $version         = $title,
+  $ensure          = 'present',
 ){
-  include 'rbenv'
+  include 'rbenv::params'
 
-  $ruby_package = "rbenv-${version}"
+  $ruby_package    = "rbenv-${version}"
+  $bundler_version = $rbenv::params::bundler_version
 
   package{ $ruby_package:
-    ensure  => 'present',
+    ensure  => $ensure,
     require => [Package['rbenv'], File['/etc/gemrc']]
   }
 
-  $gem_path = "/usr/lib/rbenv/versions/${version}/bin/gem"
+  if $ensure == 'present' {
+    $gem_path = "/usr/lib/rbenv/versions/${version}/bin/gem"
 
-  exec{ "rbenv:bundler_${version}":
-    command => "${gem_path} install bundler",
-    unless  => "${gem_path} list | grep bundler",
-    require => Package[$ruby_package],
-    notify  => Exec['rbenv:rehash']
+    exec{ "rbenv:${version} bundler":
+      command => "${gem_path} install bundler --version='=${bundler_version}'",
+      unless  => "${gem_path} query -i -n 'bundler' -v '${bundler_version}'",
+      require => Package[$ruby_package],
+      notify  => Exec['rbenv:rehash']
+    }
   }
 }
