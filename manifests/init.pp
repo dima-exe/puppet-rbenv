@@ -6,10 +6,10 @@ class rbenv (
   $global_version = undef
 ) {
 
-  include 'rbenv::params'
+  include 'rbenv::config'
 
   package { 'rbenv':
-    ensure => $rbenv::params::rbenv_version,
+    ensure => $rbenv::config::rbenv_version,
   }
 
   package { 'build-essential':

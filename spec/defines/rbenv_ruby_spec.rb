@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "rbenv::ruby" do
   let(:title) { 'my-ruby-version' }
 
-  it { should include_class("rbenv::params") }
+  it { should include_class("rbenv::config") }
 
   it do should contain_package("rbenv-my-ruby-version").with(
     :ensure  => 'present',

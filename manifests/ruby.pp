@@ -10,10 +10,10 @@ define rbenv::ruby (
   $version         = $title,
   $ensure          = 'present',
 ){
-  include 'rbenv::params'
+  include 'rbenv::config'
 
   $ruby_package    = "rbenv-${version}"
-  $bundler_version = $rbenv::params::bundler_version
+  $bundler_version = $rbenv::config::bundler_version
 
   package{ $ruby_package:
     ensure  => $ensure,
