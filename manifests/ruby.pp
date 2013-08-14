@@ -21,11 +21,11 @@ define rbenv::ruby (
   }
 
   if $ensure == 'present' {
-    $gem_path = "/usr/lib/rbenv/versions/${version}/bin/gem"
+    $prefix = "/usr/bin/env RBENV_VERSION=${version} rbenv exec gem"
 
     exec{ "rbenv:${version} bundler":
-      command => "${gem_path} install bundler --version='=${bundler_version}'",
-      unless  => "${gem_path} query -i -n 'bundler' -v '${bundler_version}'",
+      command => "${prefix} install bundler --version='=${bundler_version}'",
+      unless  => "${prefix} query -i -n 'bundler' -v '${bundler_version}'",
       require => Package[$ruby_package],
       notify  => Exec['rbenv:rehash']
     }
